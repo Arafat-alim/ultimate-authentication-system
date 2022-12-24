@@ -117,3 +117,32 @@ module.exports.accountActivation = (req, res) => {
     });
   }
 };
+
+//! Login
+module.exports.login = (req, res) => {
+  const { email, password } = req.body;
+  User.findOne({ email }).exec((err, user) => {
+    if (err || !user) {
+      return res.status(400).json({
+        error: "User with that email does not exists. Please Signup",
+      });
+    }
+    //! authenticate
+    if (!user.authenticate(password)) {
+      return res.status(400).json({
+        error: "Email and password do not matched!",
+      });
+    }
+    //! generate a token and send to client
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+    //! Pulled out the user information
+    const { _id, name, email, role } = user;
+
+    return res.json({
+      token: token,
+      user: { _id, name, email, role },
+    });
+  });
+};
