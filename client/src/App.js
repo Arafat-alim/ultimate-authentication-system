@@ -1,8 +1,10 @@
+import Layout from "./core/Layout";
+
 const App = () => {
   return (
-    <div>
+    <Layout>
       <h1>React Application</h1>
-    </div>
+    </Layout>
   );
 };
 
