@@ -5,6 +5,10 @@ const Router = express.Router();
 //! IMporting Controller
 const { signup } = require("../controllers/auth");
 
-Router.get("/signup", signup);
+//! Import validator
+const { userSignupValidator } = require("../validator/auth");
+const { runValidation } = require("../validator");
+
+Router.post("/signup", userSignupValidator, runValidation, signup);
 
 module.exports = Router;
