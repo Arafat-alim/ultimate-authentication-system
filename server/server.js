@@ -31,7 +31,7 @@ const authRoutes = require("./routes/authRoutes");
 //! Middleware
 app.use("/api", authRoutes);
 
-const PORT = process.env.port || 8000;
+const PORT = process.env.PORT || 8000;
 
 //! Listing server
 app.listen(PORT, () => {

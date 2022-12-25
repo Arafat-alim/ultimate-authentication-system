@@ -35,7 +35,7 @@ module.exports.signup = (req, res) => {
 
   User.findOne({ email }).exec((err, user) => {
     if (user) {
-      return res.status(400).res.json({
+      return res.status(400).json({
         error: "The Email ID is already Taken",
       });
     }

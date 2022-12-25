@@ -18,11 +18,35 @@ const Signup = () => {
   const { name, email, password, buttonText } = values;
 
   //! Handle change
-  const handleChange = (name) => (event) => {};
+  const handleChange = (name) => (event) => {
+    setValues({ ...values, [name]: event.target.value });
+  };
 
   //! Click Submit
   const clickSubmit = (event) => {
     event.preventDefault();
+    setValues({ ...values, buttonText: "Submitting" });
+    axios({
+      method: "POST",
+      url: `${process.env.REACT_APP_API}/api/signup`,
+      data: { name, email, password },
+    })
+      .then((response) => {
+        console.log("SIGNUP SUCESSS", response);
+        setValues({
+          ...values,
+          name: "",
+          email: "",
+          password: "",
+          buttonText: "Submitted",
+        });
+        toast.success(response.data.nessage);
+      })
+      .catch((error) => {
+        console.log("SIGNU ERROR ", error.response.data);
+        setValues({ ...values, buttonText: "Submit" });
+        toast.error(error.response.data.error);
+      });
   };
 
   const signup = () => (
@@ -65,6 +89,7 @@ const Signup = () => {
     <Layout>
       <div className="col-md-6 offset-md-3">
         <ToastContainer />
+        {JSON.stringify({ name, email, password })}
         <h1 className="p-5 text-center">Signup</h1>
         {signup()}
       </div>
