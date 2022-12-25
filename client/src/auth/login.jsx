@@ -1,67 +1,51 @@
 import { useState } from "react";
-import { Link, Redirect } from "react-router-dom";
 import Layout from "../core/Layout";
 import { ToastContainer, toast } from "react-toastify";
-import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
 
-const Signup = () => {
-  //! state
+const Login = () => {
+  //! states
   const [values, setValues] = useState({
-    name: "",
     email: "",
     password: "",
-    buttonText: "Submit",
+    buttonText: "Login",
   });
 
-  //! Destructuring
-  const { name, email, password, buttonText } = values;
+  const { email, password, buttonText } = values;
 
-  //! Handle change
   const handleChange = (name) => (event) => {
     setValues({ ...values, [name]: event.target.value });
   };
 
-  //! Click Submit
   const clickSubmit = (event) => {
     event.preventDefault();
-    setValues({ ...values, buttonText: "Submitting" });
     axios({
       method: "POST",
-      url: `${process.env.REACT_APP_API}/api/signup`,
-      data: { name, email, password },
+      url: `${process.env.REACT_APP_API}/api/login`,
+      data: { email, password },
     })
       .then((response) => {
-        console.log("SIGNUP SUCESSS", response);
+        console.log("LOGIN SUCCESS ", response);
+        //! Save the response (user, token) localstorage/cookie
         setValues({
           ...values,
-          name: "",
           email: "",
           password: "",
-          buttonText: "Submitted",
+          buttonText: "Logged In",
         });
-        toast.success(response.data.message);
+        toast.success(`Hey! ${response.data.user.name}, Welcome Back!`);
       })
       .catch((error) => {
-        console.log("SIGNU ERROR ", error.response.data);
-        setValues({ ...values, buttonText: "Submit" });
+        console.log("LOGIN ERROR ", error);
+        setValues({ ...values, email: "", password: "", buttonText: "Login" });
         toast.error(error.response.data.error);
       });
   };
-
-  const signup = () => (
+  const login = () => (
     <form>
       <div className="form-group">
-        <label className="text-muted">Name</label>
-        <input
-          type="text"
-          className="form-control"
-          onChange={handleChange("name")}
-          value={name}
-        />
-      </div>
-      <div className="form-group">
-        <label className="text-muted">Email ID</label>
+        <label className="text-muted">Email</label>
         <input
           type="email"
           className="form-control"
@@ -88,13 +72,13 @@ const Signup = () => {
   return (
     <Layout>
       <div className="col-md-6 offset-md-3">
+        {JSON.stringify({ email, password })}
         <ToastContainer />
-        {JSON.stringify({ name, email, password })}
-        <h1 className="p-5 text-center">Signup</h1>
-        {signup()}
+        <h1 className="p-5 text-center">Login</h1>
+        {login()}
       </div>
     </Layout>
   );
 };
 
-export default Signup;
+export default Login;
