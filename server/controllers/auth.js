@@ -152,3 +152,22 @@ module.exports.login = (req, res) => {
 module.exports.requiredSignIn = expressJwt({
   secret: process.env.JWT_SECRET, //! req.user._id
 });
+
+//! Admin middleware
+module.exports.adminMiddleware = (req, res, next) => {
+  User.findById({ _id: req.user._id }).exec((err, user) => {
+    if (err || !user) {
+      return res.status(400).json({
+        error: "User not Found",
+      });
+    }
+    if (user.role !== "admin") {
+      return res.status(400).json({
+        error: "Admin Resouces. Access Denied!",
+      });
+    }
+    //! added new property named profile and store that admin data on it
+    user.profile = user;
+    next();
+  });
+};
