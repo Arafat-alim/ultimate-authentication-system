@@ -8,7 +8,7 @@ import jwt_decode from "jwt-decode";
 import "react-toastify/dist/ReactToastify.css";
 import Layout from "../core/Layout";
 
-const Activate = ({ match }) => {
+const Activate = ({ match, history }) => {
   //! State
   const [values, setValues] = useState({
     name: "",
@@ -39,6 +39,10 @@ const Activate = ({ match }) => {
         console.log("ACTIVATION ACCOUNT SUCCESS", response);
         setValues({ ...values, show: false });
         toast.success(response.data.message);
+        toast.success("Redirecting to Login Page...");
+        setTimeout(() => {
+          history.push("/login");
+        }, 10000);
       })
       .catch((error) => {
         console.log("ACTIVATION ACCOUNT FAILED: ", error);

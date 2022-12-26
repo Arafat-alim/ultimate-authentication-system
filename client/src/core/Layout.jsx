@@ -12,14 +12,14 @@ const Layout = ({ children, match, history }) => {
   const nav = () => {
     return (
       <ul className="nav nav-tabs bg-primary">
-        <li className="item">
-          <Link to="/" className="nav-link" style={isActive("/")}>
+        <li className="nav-item">
+          <Link className="nav-link" to="/" style={isActive("/")}>
             Home
           </Link>
         </li>
-        {!isAuth() ? (
+        {!isAuth() && (
           <>
-            <li className="item">
+            <li className="nav-item">
               <Link
                 to="/signup"
                 className=" nav-link"
@@ -28,44 +28,57 @@ const Layout = ({ children, match, history }) => {
                 Signup
               </Link>
             </li>
-            <li className="item">
+            <li className="nav-item">
               <Link to="/login" className="nav-link" style={isActive("/login")}>
                 Login
               </Link>
             </li>
           </>
-        ) : (
-          <>
-            <li className="item">
-              <span
-                className="nav-link"
-                style={{
-                  backgroundColor: "green",
-
-                  color: "#fff",
-                }}
-              >
-                {`Welcome ${isAuth().name}`}
-              </span>
-            </li>
-            <li className="item">
-              <span
-                className="nav-link"
-                style={{ cursor: "pointer", color: "#fff" }}
-                onClick={() =>
-                  signout(() => {
-                    history.push("/login");
-                  })
-                }
-              >
-                Logout
-              </span>
-            </li>
-          </>
+        )}
+        {/* For Admin */}
+        {isAuth() && isAuth().role === "Admin" && (
+          <li className="nav-item">
+            <Link to="/admin" className="nav-link" style={isActive("/admin")}>
+              {`Welcome ${isAuth().name}`}
+            </Link>
+          </li>
+        )}
+        {/* For Subscriber */}
+        {isAuth() && isAuth().role === "Subscriber" && (
+          <li className="nav-item">
+            <Link
+              to="/private"
+              style={isActive("/private")}
+              className="nav-link"
+            >
+              {isAuth().name}
+            </Link>
+          </li>
+        )}
+        {/* For logout */}
+        {isAuth() && (
+          <li className="nav-item">
+            <span
+              className="nav-link"
+              style={{
+                backgroundColor: "red",
+                color: "#fff",
+                cursor: "pointer",
+              }}
+              onClick={() =>
+                signout(() => {
+                  history.push("/");
+                })
+              }
+            >
+              Logout
+            </span>
+          </li>
         )}
       </ul>
     );
   };
+
   return (
     <>
       {nav()}

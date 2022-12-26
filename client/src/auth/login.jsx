@@ -7,7 +7,7 @@ import axios from "axios";
 
 import { authenticate, isAuth } from "./helper.js";
 
-const Login = () => {
+const Login = ({ history }) => {
   //! states
   const [values, setValues] = useState({
     email: "",
@@ -38,7 +38,10 @@ const Login = () => {
             password: "",
             buttonText: "Logged In",
           });
-          toast.success(`Hey! ${response.data.user.name}, Welcome Back!`);
+          // toast.success(`Hey! ${response.data.user.name}, Welcome Back!`);
+          isAuth() && isAuth().role === "Admin"
+            ? history.push("/admin")
+            : history.push("/private");
         });
       })
       .catch((error) => {
