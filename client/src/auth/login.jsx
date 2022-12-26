@@ -1,8 +1,11 @@
 import { useState } from "react";
 import Layout from "../core/Layout";
 import { ToastContainer, toast } from "react-toastify";
+import { Redirect } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
+
+import { authenticate, isAuth } from "./helper.js";
 
 const Login = () => {
   //! states
@@ -28,13 +31,15 @@ const Login = () => {
       .then((response) => {
         console.log("LOGIN SUCCESS ", response);
         //! Save the response (user, token) localstorage/cookie
-        setValues({
-          ...values,
-          email: "",
-          password: "",
-          buttonText: "Logged In",
+        authenticate(response, () => {
+          setValues({
+            ...values,
+            email: "",
+            password: "",
+            buttonText: "Logged In",
+          });
+          toast.success(`Hey! ${response.data.user.name}, Welcome Back!`);
         });
-        toast.success(`Hey! ${response.data.user.name}, Welcome Back!`);
       })
       .catch((error) => {
         console.log("LOGIN ERROR ", error);
@@ -72,8 +77,8 @@ const Login = () => {
   return (
     <Layout>
       <div className="col-md-6 offset-md-3">
-        {JSON.stringify({ email, password })}
         <ToastContainer />
+        {isAuth() ? <Redirect to="/" /> : null}
         <h1 className="p-5 text-center">Login</h1>
         {login()}
       </div>
