@@ -3,6 +3,8 @@ import App from "./App";
 import Signup from "./auth/Signup";
 import Login from "./auth/login";
 import Activate from "./auth/Activate";
+import Private from "./core/Private";
+import PrivateRoute from "./auth/PrivateRoute";
 
 const Routes = () => {
   return (
@@ -11,6 +13,7 @@ const Routes = () => {
         <Route path="/signup" component={Signup} />
         <Route path="/login" component={Login} />
         <Route path="/auth/activate/:token" component={Activate} />
+        <PrivateRoute path="/private" component={Private} />
         <Route path="/" component={App} />
       </Switch>
     </BrowserRouter>
