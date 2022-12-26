@@ -6,7 +6,7 @@ import { isAuth } from "./helper";
 import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
 
-const Signup = () => {
+const Signup = ({ history }) => {
   //! state
   const [values, setValues] = useState({
     name: "",
@@ -33,7 +33,7 @@ const Signup = () => {
       data: { name, email, password },
     })
       .then((response) => {
-        console.log("SIGNUP SUCESSS", response);
+        console.log("SIGNUP SUCESSS");
         setValues({
           ...values,
           name: "",
@@ -42,6 +42,16 @@ const Signup = () => {
           buttonText: "Submitted",
         });
         toast.success(response.data.message);
+        setTimeout(() => {
+          toast.success(
+            `Hey ${
+              JSON.parse(response.config.data).name
+            }! You will be redirecting to login Page!`
+          );
+        }, 2000);
+        setTimeout(() => {
+          history.push("/login");
+        }, 6000);
       })
       .catch((error) => {
         console.log("SIGNU ERROR ", error.response.data);
