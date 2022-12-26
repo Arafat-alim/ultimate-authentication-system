@@ -1,5 +1,6 @@
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
+const { expressjwt: expjwt } = require("express-jwt");
 const { sendEmailWithNodemailer } = require("../helpers/email");
 
 //! sendgrid
@@ -146,3 +147,9 @@ module.exports.login = (req, res) => {
     });
   });
 };
+
+//! Middleware that gives us user_Id - explicit feature of express JWT
+module.exports.requiredSignIn = expjwt({
+  secret: process.env.JWT_SECRET, //! req.user._id
+  algorithms: ["HS256"],
+});
