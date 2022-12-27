@@ -39,7 +39,7 @@ const Login = ({ history }) => {
             buttonText: "Logged In",
           });
           // toast.success(`Hey! ${response.data.user.name}, Welcome Back!`);
-          isAuth() && isAuth().role === "Admin"
+          isAuth() && isAuth().role === "admin"
             ? history.push("/admin")
             : history.push("/private");
         });
