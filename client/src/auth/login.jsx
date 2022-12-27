@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Layout from "../core/Layout";
 import { ToastContainer, toast } from "react-toastify";
-import { Redirect } from "react-router-dom";
+import { Redirect, Link } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 
@@ -84,6 +84,7 @@ const Login = ({ history }) => {
         {isAuth() ? <Redirect to="/" /> : null}
         <h1 className="p-5 text-center">Login</h1>
         {login()}
+        <Link to="/auth/password/forgot">Forgot Password?</Link>
       </div>
     </Layout>
   );

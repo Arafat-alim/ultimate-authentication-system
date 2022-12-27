@@ -104,6 +104,7 @@ const Signup = ({ history }) => {
         {/* {JSON.stringify({ name, email, password })} */}
         <h1 className="p-5 text-center">Signup</h1>
         {signup()}
+        <Link to="/auth/password/forgot">Forgot Password?</Link>
       </div>
     </Layout>
   );

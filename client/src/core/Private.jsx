@@ -121,6 +121,7 @@ const Private = ({ history }) => {
   return (
     <Layout>
       <div className="col-md-6 offset-md-3">
+        {!isAuth() && window.reload()}
         <ToastContainer />
         <h1 className="pt-5 text-center">Private </h1>
         <p className="lead text-center">Profile Update</p>
