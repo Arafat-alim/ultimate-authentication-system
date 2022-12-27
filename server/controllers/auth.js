@@ -198,9 +198,21 @@ module.exports.forgotPassword = (req, res) => {
 
       `,
     };
-    //! send the token via node Emailer package
-    sendEmailWithNodemailer(req, res, resetData);
+
+    return user.updateOne({ resetPasswordLink: token }, (err, success) => {
+      if (err) {
+        console.log("RESET PASSWORD LINK ERROR: ", err);
+        return res.status(400).json({
+          error: "Database connection error on user password forgot request",
+        });
+      } else {
+        //! send the token via node Emailer package
+        sendEmailWithNodemailer(req, res, resetData);
+      }
+    });
   });
 };
 
-module.exports.resetPassword = () => {};
+module.exports.resetPassword = (req, res) => {
+  const { resetPasswordLink, newPassword } = req.body;
+};
