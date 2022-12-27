@@ -1,3 +1,4 @@
+const _ = require("lodash");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const expressJwt = require("express-jwt");
@@ -215,4 +216,40 @@ module.exports.forgotPassword = (req, res) => {
 
 module.exports.resetPassword = (req, res) => {
   const { resetPasswordLink, newPassword } = req.body;
+  if (resetPasswordLink) {
+    jwt.verify(
+      resetPasswordLink,
+      process.env.JWT_RESET_PASSWORD,
+      function (err, decoded) {
+        if (err) {
+          console.log("", err);
+          return res.status(400).json({
+            error: "Expired Link! Try Again",
+          });
+        }
+        User.findOne({ resetPasswordLink }).exec((err, user) => {
+          if (err || !user) {
+            return res.status(400).json({
+              error: "Something Went Wrong! Try Again",
+            });
+          }
+          const updatedFields = {
+            password: newPassword,
+            resetPasswordLink: "",
+          };
+          user = _.extend(user, updatedFields);
+          user.save((err, result) => {
+            if (err) {
+              return res.status(400).json({
+                error: "Error resetting user password",
+              });
+            }
+            res.json({
+              message: `Password Updated Successfully! Please Login!`,
+            });
+          });
+        });
+      }
+    );
+  }
 };
