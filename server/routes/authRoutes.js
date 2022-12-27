@@ -3,16 +3,39 @@ const express = require("express");
 const Router = express.Router();
 
 //! IMporting Controller
-const { signup, accountActivation, login } = require("../controllers/auth");
+const {
+  signup,
+  accountActivation,
+  login,
+  resetPassword,
+  forgotPassword,
+} = require("../controllers/auth");
 
 //! Import validator
 const {
   userSignupValidator,
   userLoginValidator,
+  resetPasswordValidator,
+  forgotPasswordValidator,
 } = require("../validator/auth");
 const { runValidation } = require("../validator");
 
 Router.post("/signup", userSignupValidator, runValidation, signup);
 Router.post("/account-activation", accountActivation);
 Router.post("/login", userLoginValidator, runValidation, login);
+//! Forgot password Routes
+Router.put(
+  "/forgot-password",
+  forgotPasswordValidator,
+  runValidation,
+  forgotPassword
+);
+
+Router.put(
+  "/reset-password",
+  resetPasswordValidator,
+  runValidation,
+  resetPassword
+);
+
 module.exports = Router;

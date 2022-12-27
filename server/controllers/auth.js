@@ -171,3 +171,36 @@ module.exports.adminMiddleware = (req, res, next) => {
     next();
   });
 };
+
+module.exports.forgotPassword = (req, res) => {
+  const { email } = req.body;
+  User.findOne({ email }).exec((err, user) => {
+    if (err || !user) {
+      return res.status(400).json({
+        error: "User with that Email not Found",
+      });
+    }
+    //! create a token
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_RESET_PASSWORD, {
+      expiresIn: "10m",
+    });
+    //! Generating email Data
+    const resetData = {
+      from: process.env.EMAIL_FROM,
+      to: email,
+      subject: "Account Reset Password Link",
+      html: `
+      <h1>Please use the following Link to Reset your Password</h1>
+      <p>${process.env.CLIENT_URL}/auth/forgot/password/reset/${token}</p>
+      <hr/>
+      <p>This Email may contain the sensitive information</p>
+      <p>${process.env.CLIENT_URL}</p>
+
+      `,
+    };
+    //! send the token via node Emailer package
+    sendEmailWithNodemailer(req, res, resetData);
+  });
+};
+
+module.exports.resetPassword = () => {};
