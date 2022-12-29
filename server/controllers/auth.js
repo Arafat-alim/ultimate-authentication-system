@@ -4,6 +4,8 @@ const jwt = require("jsonwebtoken");
 const expressJwt = require("express-jwt");
 const { sendEmailWithNodemailer } = require("../helpers/email");
 
+const { OAuth2Client } = require("google-auth-library");
+
 //! sendgrid
 // const sgMail = require("@sendgrid/mail");
 // sgMail.setApiKey(process.env.SENDGRID_API_KEY);
@@ -255,5 +257,106 @@ module.exports.resetPassword = (req, res) => {
         });
       }
     );
+  }
+};
+
+// //! Google Auth
+// // const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+// exports.googleLogin = (req, res) => {
+//   const { idToken } = req.body;
+
+//   client
+//     .verifyIdToken({ idToken, audience: process.env.GOOGLE_CLIENT_ID })
+//     .then((response) => {
+//       console.log("GOOGLE LOGIN RESPONSE", response);
+//       const { email_verified, name, email } = response.payload;
+//       if (email_verified) {
+//         //! find user in the database
+//         User.findOne({ email }).exec((err, user) => {
+//           if (user) {
+//             const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+//               expiresIn: "7d",
+//             });
+//             const { _id, name, email, role } = user;
+//             return res.json({
+//               token,
+//               user: { _id, name, email, role },
+//             });
+//           } else {
+//             //! creating a pssword on behalf of user - google login
+//             let password = email + process.env.JWT_SECRET;
+//             user = new User({ name, email, password });
+//             user.save().exec((err, data) => {
+//               if (err) {
+//                 console.log("ERROR GOOGLE LOGIN ON USER SAVE", err);
+//                 return res.status(400).json({
+//                   error: "User Sign Up Failed with Google",
+//                 });
+//               }
+//               const token = jwt.sign(
+//                 { _id: data._id },
+//                 process.env.JWT_SECRET,
+//                 { expiresIn: "7d" }
+//               );
+//               const { name, user, email, role } = data;
+//               return res.json({
+//                 token,
+//                 user: { name, user, email, role },
+//               });
+//             });
+//           }
+//         });
+//       } else {
+//         return res.status(400).json({
+//           error: "Google Login Failed! Try Again",
+//         });
+//       }
+//     });
+// };
+
+exports.googleLogin = (req, res) => {
+  const { idToken } = req.body;
+
+  //! decode the idToken using jsonwebtoken
+  const { name, email, email_verified } = jwt.decode(idToken);
+  if (email_verified) {
+    //! Find user in the database
+    User.findOne({ email }).exec((err, user) => {
+      if (user) {
+        const token = jwt.sign({ _id: user.id }, process.env.JWT_SECRET, {
+          expiresIn: "7d",
+        });
+        const { _id, name, email, role } = user;
+        return res.json({
+          token,
+          user: { _id, name, email, role },
+        });
+      } else {
+        //! creating a password on behalf of user
+        const password = email + process.env.JWT_SECRET;
+        //! creating a new user
+        user = new User({ name, email, password });
+        user.save().exec((err, data) => {
+          if (err) {
+            console.log("ERROR GOOGLE LOGIN ON USER SAVE", err);
+            return res.status(400).json({
+              error: "User Sign Up Failed with Google",
+            });
+          }
+          const token = jwt.sign({ _id: data._id }, process.env.JWT_SECRET, {
+            expiresIn: "7d",
+          });
+          const { name, user, email, role } = data;
+          return res.json({
+            token,
+            user: { name, user, email, role },
+          });
+        });
+      }
+    });
+  } else {
+    return res.status(400).json({
+      error: "Google Login Failed! Try Again",
+    });
   }
 };

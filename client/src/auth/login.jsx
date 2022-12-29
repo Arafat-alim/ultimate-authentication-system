@@ -6,6 +6,8 @@ import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 
 import { authenticate, isAuth } from "./helper.js";
+// import Google from "./Google";
+import Facebook from "./Facebook";
 
 const Login = ({ history }) => {
   //! states
@@ -19,6 +21,15 @@ const Login = ({ history }) => {
 
   const handleChange = (name) => (event) => {
     setValues({ ...values, [name]: event.target.value });
+  };
+
+  //! inform parent
+  const informParent = (response) => {
+    authenticate(response, () => {
+      isAuth() && isAuth().role === "admin"
+        ? history.push("/admin")
+        : history.push("/private");
+    });
   };
 
   const clickSubmit = (event) => {
@@ -83,6 +94,7 @@ const Login = ({ history }) => {
         <ToastContainer />
         {isAuth() ? <Redirect to="/" /> : null}
         <h1 className="p-5 text-center">Login</h1>
+        <Facebook />
         {login()}
         <Link to="/auth/password/forgot">Forgot Password?</Link>
       </div>
