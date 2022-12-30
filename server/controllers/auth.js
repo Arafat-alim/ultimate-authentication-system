@@ -5,6 +5,7 @@ const expressJwt = require("express-jwt");
 const { sendEmailWithNodemailer } = require("../helpers/email");
 
 const { OAuth2Client } = require("google-auth-library");
+const fetch = require("node-fetch");
 
 //! sendgrid
 // const sgMail = require("@sendgrid/mail");
@@ -359,4 +360,59 @@ exports.googleLogin = (req, res) => {
       error: "Google Login Failed! Try Again",
     });
   }
+};
+
+//! Facebook auth
+exports.facebookLogin = (req, res) => {
+  console.log("FACEBOOK LOGIN RESPONSE BODY", req.body);
+  const { userID, accessToken } = req.body;
+  const url = `https://graph.facebook.com/v2.11/${userID}/fields=id,name,email&access_Token=${accessToken}`;
+
+  return fetch(url, {
+    method: "GET",
+  })
+    .then((response) => response.json())
+    .then((response) => {
+      const { email, name } = response;
+      User.findOne(email).exec((err, user) => {
+        if (user) {
+          //! Generate token
+          const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+            expiresIn: "7d",
+          });
+          const { _id, name, role, email } = user;
+          return res.json({
+            token,
+            user: { _id, name, role, email },
+          });
+        } else {
+          //! generate password
+          const password = email + process.env.JWT_SECRET;
+          //! Create a new user
+          let user = new User({ name, email, password });
+          user.save().exec((err, success) => {
+            if (err) {
+              console.log("ERROR FACEBOOK LOGIN ON USER SAVE", err);
+              return res.status(400).json({
+                error: "User sign Up failed By using Facebook",
+              });
+            }
+            //1 Generate Token
+            const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+              expiresIn: "7d",
+            });
+            const { _id, name, emall, role } = user;
+            return res.json({
+              token,
+              user: { _id, name, emall, role },
+            });
+          });
+        }
+      });
+    })
+    .catch((err) => {
+      res.status(400).json({
+        error: "Facebook Login Failed! Try Again",
+      });
+    });
 };

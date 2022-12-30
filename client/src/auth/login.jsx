@@ -94,7 +94,7 @@ const Login = ({ history }) => {
         <ToastContainer />
         {isAuth() ? <Redirect to="/" /> : null}
         <h1 className="p-5 text-center">Login</h1>
-        <Facebook />
+        <Facebook informParent={informParent} />
         {login()}
         <Link to="/auth/password/forgot">Forgot Password?</Link>
       </div>

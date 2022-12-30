@@ -1,14 +1,11 @@
 import Axios from "axios";
 import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props";
 
-const responseFacebook = (response) => {
-  console.log(response);
-};
 const Facebook = ({ informParent = (f) => f }) => {
   const responseFacebook = (response) => {
     Axios({
       method: "POST",
-      url: `${process.env.REACT_APP_CLIENT_API}/api/facebook-login`,
+      url: `${process.env.REACT_APP_API}/api/facebook-login`,
       data: { userID: response.userID, accessToken: response.accessToken },
     })
       .then((response) => {
