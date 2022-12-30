@@ -1,34 +1,40 @@
-import Axios from "axios";
+import React from "react";
 import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props";
+import axios from "axios";
 
 const Facebook = ({ informParent = (f) => f }) => {
   const responseFacebook = (response) => {
-    Axios({
+    console.log(response);
+    axios({
       method: "POST",
       url: `${process.env.REACT_APP_API}/api/facebook-login`,
       data: { userID: response.userID, accessToken: response.accessToken },
     })
       .then((response) => {
-        console.log("FACEBOOK LOGIN SUCCESS, ", response);
-        //! inform Parent component
+        console.log("FACEBOOK SIGNIN SUCCESS", response);
+        // inform parent component
         informParent(response);
       })
-      .catch((error) => console.log("FACEBOOK LOGIN FALED", error.reponse));
+      .catch((error) => {
+        console.log("FACEBOOK SIGNIN ERROR", error.response);
+      });
   };
   return (
-    <FacebookLogin
-      appId={`${process.env.REACT_APP_FACEBOOK_APP_ID}`}
-      autoLoad={false}
-      callback={responseFacebook}
-      render={(renderProps) => (
-        <button
-          onClick={renderProps.onClick}
-          className="btn btn-primary btn-lg btn-block"
-        >
-          <i class="fa-brands fa-facebook-f pr-2"></i> Continue with Facebook
-        </button>
-      )}
-    />
+    <div className="pb-3">
+      <FacebookLogin
+        appId={`${process.env.REACT_APP_FACEBOOK_APP_ID}`}
+        autoLoad={false}
+        callback={responseFacebook}
+        render={(renderProps) => (
+          <button
+            onClick={renderProps.onClick}
+            className="btn btn-primary btn-lg btn-block"
+          >
+            <i class="fa-brands fa-facebook-f pr-2"></i> Login with Facebook
+          </button>
+        )}
+      />
+    </div>
   );
 };
 
